@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://cdn.webrtc.ecl.ntt.com/skyway-latest.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@whirvis/aframe-mediarecorder-component@1.0.1/dist/aframe-mediarecorder-component.min.js"></script>
+  </head>
+  <body>
+    HI
+    <a-scene>
+      <a-entity id="camera" camera></a-entity>
+      <a-entity vr-mode-ui="enabled: false"></a-entity>
+      <a-assets>
+        <audio id="click-sound" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
+      </a-assets>
+      <a-camera mediarecorder="recording: true; autoStart: false" >
+        <a-entity id="start-stop-button"
+                  geometry="primitive: circle; radius: 0.05"
+                  material="color: green"
+                  position="0 0.3 -0.3"
+                  sound="src: #click-sound"
+                  class="clickable"
+                  mediarecorder-toggle="recording"></a-entity>
+      </a-camera>
+    </a-scene>
+
+    <script>
+      const startStopButton = document.querySelector('#start-stop-button');
+      const camera = document.querySelector('#-camera');
+
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }).then(function (stream) {
+        camera.setAttribute('stream', `src: ${URL.createObjectURL(stream)}`);
+      });
+
+      startStopButton.addEventListener('click', () => {
+        camera.components.mediarecorder.toggleRecording();
+        startStopButton.setAttribute('material', { color: camera.components.mediarecorder.data.recording ? 'red' : 'green' });
+      });
+    </script>
+  </body>
+</html>
